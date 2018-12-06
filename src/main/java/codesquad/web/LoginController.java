@@ -2,6 +2,7 @@ package codesquad.web;
 
 import codesquad.UnAuthenticationException;
 import codesquad.domain.User;
+import codesquad.security.HttpSessionUtils;
 import codesquad.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +27,17 @@ public class LoginController {
         return "/user/login";
     }
 
-    @GetMapping("/failed")
-    public String failForm() {
-        return "/user/login_failed";
-    }
+//    @GetMapping("/failed")
+//    public String failForm() {
+//        return "/user/login_failed";
+//    }
 
     @PostMapping("")
     public String login(String userId, String password, HttpSession httpSession) {
         // TODO 로그인 기능 구현 및 세션에 User 정보 저장
         try {
         User user = userService.login(userId, password);
-        httpSession.setAttribute("loggedInUser", user);
+        httpSession.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
         return "redirect:/";
         } catch (UnAuthenticationException e) {
             return "/user/login_failed";
