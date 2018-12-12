@@ -45,7 +45,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable long id, Model model) {
+    public String read(@PathVariable long id, Model model) {
         //TODO : null 익셉션처리
         Question question = qnaService.findById(id).orElse(null);
         log.debug("qna number {}", id);
