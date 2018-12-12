@@ -38,7 +38,10 @@ public class QnaService {
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) {
         // TODO 수정 기능 구현
-        return null;
+        // TODO : 익셉션 처리, @Transactional 학습(save 라인이 없는 이유?)
+        Question original = findById(id).orElse(null);
+        original.update(loginUser, updatedQuestion);
+        return original;
     }
 
     @Transactional

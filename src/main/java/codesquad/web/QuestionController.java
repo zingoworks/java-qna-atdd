@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -38,6 +35,7 @@ public class QuestionController {
 
     @GetMapping("")
     public String list(Model model, Pageable pageable) {
+        //TODO : Pageable 학습
         List<Question> questions = qnaService.findAll(pageable);
         log.debug("qna size : {}", questions.size());
         model.addAttribute("questions", questions);
@@ -53,15 +51,15 @@ public class QuestionController {
         return "/qna/show";
     }
 
-//    @GetMapping("/{id}/form")
-//    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
-//        model.addAttribute("question", qnaService.findById(id));
-//        return "/qna/updateForm";
-//    }
+    @GetMapping("/{id}/form")
+    public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
+        model.addAttribute("question", qnaService.findById(id));
+        return "/qna/updateForm";
+    }
 
-//    @PutMapping("/{id}")
-//    public String update(@LoginUser User loginUser, @PathVariable long id, User target) {
-//        userService.update(loginUser, id, target);
-//        return "redirect:/users";
-//    }
+    @PutMapping("/{id}")
+    public String update(@LoginUser User loginUser, @PathVariable long id, Question updatedQuestion) {
+        qnaService.update(loginUser, id, updatedQuestion);
+        return "redirect:/questions/{id}";
+    }
 }
