@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.exception.CannotDeleteException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.security.LoginUser;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Controller
@@ -44,8 +46,7 @@ public class QuestionController {
 
     @GetMapping("/{id}")
     public String read(@PathVariable long id, Model model) {
-        //TODO : null 익셉션처리
-        Question question = qnaService.findById(id).orElse(null);
+        Question question = qnaService.findById(id).orElseThrow(NoResultException::new);
         log.debug("qna number {}", id);
         model.addAttribute("question", question);
         return "/qna/show";
@@ -53,13 +54,27 @@ public class QuestionController {
 
     @GetMapping("/{id}/form")
     public String updateForm(@LoginUser User loginUser, @PathVariable long id, Model model) {
+        //TODO : 최선인가?
+        Question question = qnaService.findById(id).orElseThrow(NoResultException::new);
+        if(!question.matchUserId(loginUser.getUserId())) {
+            return "/user/relogin";
+        }
+        log.debug("qna updateform");
         model.addAttribute("question", qnaService.findById(id));
         return "/qna/updateForm";
     }
 
     @PutMapping("/{id}")
     public String update(@LoginUser User loginUser, @PathVariable long id, Question updatedQuestion) {
+        log.debug("qna update {}", id);
         qnaService.update(loginUser, id, updatedQuestion);
         return "redirect:/questions/{id}";
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@LoginUser User loginUser, @PathVariable long id) throws CannotDeleteException{
+        log.debug("qna delete {}", id);
+        qnaService.deleteQuestion(loginUser, id);
+        return "redirect:/";
     }
 }

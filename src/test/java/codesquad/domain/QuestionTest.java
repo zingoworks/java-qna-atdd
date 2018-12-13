@@ -1,6 +1,6 @@
 package codesquad.domain;
 
-import codesquad.UnAuthorizedException;
+import codesquad.exception.UnAuthorizedException;
 import org.junit.Test;
 import support.test.BaseTest;
 
@@ -10,7 +10,6 @@ import static codesquad.domain.UserTest.SANJIGI;
 public class QuestionTest extends BaseTest {
     public static final Question TEST_QUESTION = new Question("test title", "test contents");
     public static final Question UPDATED_QUESTION = new Question("updated title", "updated contents");
-
 
     @Test
     public void update_owner() throws Exception {

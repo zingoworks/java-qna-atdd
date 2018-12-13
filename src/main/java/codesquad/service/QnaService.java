@@ -1,6 +1,6 @@
 package codesquad.service;
 
-import codesquad.CannotDeleteException;
+import codesquad.exception.CannotDeleteException;
 import codesquad.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +45,11 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+    public void deleteQuestion(User loginUser, long id) throws CannotDeleteException {
         // TODO 삭제 기능 구현
+        //TODO : null 처리
+        Question target = findById(id).orElse(null);
+        target.delete(loginUser);
     }
 
     public Iterable<Question> findAll() {
