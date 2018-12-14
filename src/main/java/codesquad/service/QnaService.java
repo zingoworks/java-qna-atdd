@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,18 +38,15 @@ public class QnaService {
 
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) {
-        // TODO 수정 기능 구현
-        // TODO : 익셉션 처리, @Transactional 학습(save 라인이 없는 이유?)
-        Question original = findById(id).orElse(null);
+        //TODO : @Transactional 학습(save 라인이 없는 이유?)
+        Question original = findById(id).orElseThrow(NoResultException::new);
         original.update(loginUser, updatedQuestion);
         return original;
     }
 
     @Transactional
     public void deleteQuestion(User loginUser, long id) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
-        //TODO : null 처리
-        Question target = findById(id).orElse(null);
+        Question target = findById(id).orElseThrow(NoResultException::new);
         target.delete(loginUser);
     }
 

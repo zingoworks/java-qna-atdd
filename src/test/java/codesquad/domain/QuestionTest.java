@@ -36,4 +36,7 @@ public class QuestionTest extends BaseTest {
 
         origin.update(loginUser, target);
     }
+
+    //TODO : 삭제기능에 대한 테스트
+    //TODO : Mock을 이용해 QnaService에 대한 테스트
 }

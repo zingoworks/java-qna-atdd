@@ -32,7 +32,7 @@ public class QuestionController {
     @PostMapping("")
     public String create(@LoginUser User loginUser, Question question) {
         qnaService.create(loginUser, question);
-        return "redirect:/";
+        return "redirect:/questions";
     }
 
     @GetMapping("")
@@ -60,7 +60,7 @@ public class QuestionController {
             return "/user/relogin";
         }
         log.debug("qna updateform");
-        model.addAttribute("question", qnaService.findById(id));
+        model.addAttribute("question", question);
         return "/qna/updateForm";
     }
 
