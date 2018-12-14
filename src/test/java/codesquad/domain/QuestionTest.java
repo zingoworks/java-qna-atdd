@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.exception.CannotDeleteException;
 import codesquad.exception.UnAuthorizedException;
 import org.junit.Test;
 import support.test.BaseTest;
@@ -37,6 +38,26 @@ public class QuestionTest extends BaseTest {
         origin.update(loginUser, target);
     }
 
-    //TODO : 삭제기능에 대한 테스트
+    @Test
+    public void delete_owner() throws Exception {
+        User loginUser = JAVAJIGI;
+
+        Question origin = TEST_QUESTION;
+        origin.writeBy(JAVAJIGI);
+
+        origin.delete(loginUser);
+        softly.assertThat(origin.isDeleted()).isEqualTo(true);
+    }
+
+    @Test(expected = CannotDeleteException.class)
+    public void delete_not_owner() throws Exception {
+        User loginUser = JAVAJIGI;
+
+        Question origin = TEST_QUESTION;
+        origin.writeBy(SANJIGI);
+
+        origin.delete(loginUser);
+    }
+
     //TODO : Mock을 이용해 QnaService에 대한 테스트
 }

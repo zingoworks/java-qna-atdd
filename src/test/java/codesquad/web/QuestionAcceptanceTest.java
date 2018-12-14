@@ -51,6 +51,15 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    public void updateForm_login() throws Exception {
+        User loginUser = defaultUser();
+        ResponseEntity<String> response = basicAuthTemplate(loginUser)
+                .getForEntity(String.format("/questions/%d/form", 1), String.class);
+        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        softly.assertThat(response.getBody()).contains("국내에서 Ruby on Rails");
+    }
+
+    @Test
     public void updateForm_no_login() throws Exception {
         ResponseEntity<String> response = template().getForEntity(String.format("/questions/%d/form", 1),
                 String.class);
@@ -58,12 +67,10 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void updateForm_login() throws Exception {
-        User loginUser = defaultUser();
-        ResponseEntity<String> response = basicAuthTemplate(loginUser)
-                .getForEntity(String.format("/questions/%d/form", 1), String.class);
-        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        softly.assertThat(response.getBody()).contains("국내에서 Ruby on Rails");
+    public void update() throws Exception {
+        ResponseEntity<String> response = update(basicAuthTemplate());
+        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        softly.assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions/1");
     }
 
     @Test
@@ -82,16 +89,27 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         return template.postForEntity(String.format("/questions/%d", 1), request, String.class);
     }
 
-    @Test
-    public void update() throws Exception {
-        ResponseEntity<String> response = update(basicAuthTemplate());
-        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-        softly.assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions/1");
-    }
-
-    //TODO : ~
-    @Test
-    public void delete() throws Exception {
-
-    }
+    //TODO : Acceptance tests for deletion
+//    @Test
+//    public void delete() throws Exception {
+//        ResponseEntity<String> response = delete(basicAuthTemplate());
+//        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+//        softly.assertThat(response.getHeaders().getLocation().getPath()).startsWith("/questions/1");
+//    }
+//
+//    @Test
+//    public void delete_no_login() throws Exception {
+//        ResponseEntity<String> response = delete(template());
+//        softly.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+//        log.debug("body : {}", response.getBody());
+//    }
+//
+//    private ResponseEntity<String> delete(TestRestTemplate template) throws Exception {
+//        HttpEntity<MultiValueMap<String, Object>> request = HtmlFormDataBuilder.urlEncodedForm()
+//                .addParameter("_method", "put")
+//                .addParameter("title", "updated title")
+//                .addParameter("contents", "updated contents")
+//                .build();
+//        return template.postForEntity(String.format("/questions/%d", 1), request, String.class);
+//    }
 }

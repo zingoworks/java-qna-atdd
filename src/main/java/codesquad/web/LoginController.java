@@ -43,4 +43,6 @@ public class LoginController {
             return "/user/login_failed";
         }
     }
+
+    //TODO : 로그아웃 구현 및 관련 기능 User로 이관
 }
