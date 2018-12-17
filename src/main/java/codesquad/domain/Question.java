@@ -58,7 +58,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     public boolean matchUserId(String userId) {
-        return this.writer.getUserId().equals(userId);
+        return this.writer.matchUserId(userId);
     }
 
     public String getTitle() {
