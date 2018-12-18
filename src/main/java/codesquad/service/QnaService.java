@@ -26,27 +26,32 @@ public class QnaService {
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
 
+    public Question add(Question question) {
+        return questionRepository.save(question);
+    }
+
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
         log.debug("question : {}", question);
         return questionRepository.save(question);
     }
 
-    public Optional<Question> findById(long id) {
-        return questionRepository.findById(id);
+    public Question findById(long id) {
+        return questionRepository.findById(id)
+                .orElseThrow(NoResultException::new);
     }
 
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) {
         //TODO : @Transactional 학습(save 라인이 없는 이유?)
-        Question original = findById(id).orElseThrow(NoResultException::new);
+        Question original = findById(id);
         original.update(loginUser, updatedQuestion);
         return original;
     }
 
     @Transactional
     public void deleteQuestion(User loginUser, long id) throws CannotDeleteException {
-        Question target = findById(id).orElseThrow(NoResultException::new);
+        Question target = findById(id);
         target.delete(loginUser);
     }
 
@@ -64,7 +69,7 @@ public class QnaService {
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
+        // TODO 답변 삭제 기능 구현
         return null;
     }
 }
