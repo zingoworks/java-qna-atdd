@@ -41,6 +41,11 @@ public class QnaService {
                 .orElseThrow(NoResultException::new);
     }
 
+    public Answer findByAnswerId(long id) {
+        return answerRepository.findById(id)
+                .orElseThrow(NoResultException::new);
+    }
+
     @Transactional
     public Question update(User loginUser, long id, Question updatedQuestion) {
         //TODO : @Transactional 학습(save 라인이 없는 이유?)
@@ -50,9 +55,10 @@ public class QnaService {
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long id) throws CannotDeleteException {
+    public Question deleteQuestion(User loginUser, long id) throws CannotDeleteException {
         Question target = findById(id);
         target.delete(loginUser);
+        return target;
     }
 
     public Iterable<Question> findAll() {
@@ -63,6 +69,7 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
+    @Transactional
     public Answer addAnswer(User loginUser, long questionId, Answer answer) {
         //반환타입 Answer인 이유 알아보기
         Question target = findById(questionId);

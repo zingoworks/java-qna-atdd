@@ -40,8 +40,8 @@ public class ApiQuestionController {
     }
 
     @DeleteMapping("{id}")
-    public void delete(@LoginUser User loginUser, @PathVariable long id) throws CannotDeleteException {
-        qnaService.deleteQuestion(loginUser, id);
+    public Question delete(@LoginUser User loginUser, @PathVariable long id) throws CannotDeleteException {
+        return qnaService.deleteQuestion(loginUser, id);
     }
 
     //TODO : 답변 기능 구현 필요
