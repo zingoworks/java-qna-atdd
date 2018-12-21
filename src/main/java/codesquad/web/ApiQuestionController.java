@@ -21,8 +21,8 @@ public class ApiQuestionController {
     private QnaService qnaService;
 
     @PostMapping("")
-    public ResponseEntity<Void> create(@Valid @RequestBody Question question) {
-        Question savedQuestion = qnaService.add(question);
+    public ResponseEntity<Void> create(@LoginUser User loginUser, @Valid @RequestBody Question question) {
+        Question savedQuestion = qnaService.create(loginUser, question);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/api/questions/" + savedQuestion.getId()));
@@ -43,4 +43,6 @@ public class ApiQuestionController {
     public void delete(@LoginUser User loginUser, @PathVariable long id) throws CannotDeleteException {
         qnaService.deleteQuestion(loginUser, id);
     }
+
+    //TODO : 답변 기능 구현 필요
 }
