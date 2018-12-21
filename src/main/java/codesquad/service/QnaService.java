@@ -26,9 +26,9 @@ public class QnaService {
     @Resource(name = "deleteHistoryService")
     private DeleteHistoryService deleteHistoryService;
 
-    public Question add(Question question) {
-        return questionRepository.save(question);
-    }
+//    public Question add(Question question) {
+//        return questionRepository.save(question);
+//    }
 
     public Question create(User loginUser, Question question) {
         question.writeBy(loginUser);
@@ -63,9 +63,11 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        // TODO 답변 추가 기능 구현
-        return null;
+    public Answer addAnswer(User loginUser, long questionId, Answer answer) {
+        //반환타입 Answer인 이유 알아보기
+        Question target = findById(questionId);
+        target.addAnswer(answer);
+        return answer;
     }
 
     public Answer deleteAnswer(User loginUser, long id) {

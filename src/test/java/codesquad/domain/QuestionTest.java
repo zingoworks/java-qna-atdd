@@ -16,6 +16,8 @@ public class QuestionTest extends BaseTest {
         return new Question(title, contents);
     }
 
+    //TODO: 리팩토링
+
     @Test
     public void update_owner() throws Exception {
         User loginUser = JAVAJIGI;
