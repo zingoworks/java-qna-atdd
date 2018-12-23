@@ -45,7 +45,7 @@ public class QuestionTest extends BaseTest {
     }
 
     @Test
-    public void delete_owner() throws Exception {
+    public void delete_삭제가능_작성자의답변() throws Exception {
         User loginUser = JAVAJIGI;
 
         Question origin = DEFAULT_QUESTION;
@@ -55,23 +55,34 @@ public class QuestionTest extends BaseTest {
         softly.assertThat(origin.isDeleted()).isEqualTo(true);
     }
 
+    @Test
+    public void delete_삭제가능_답변없음() throws Exception {
+        User loginUser = JAVAJIGI;
+
+        Question origin = newQuestion("test", "test");
+        origin.writeBy(JAVAJIGI);
+
+        origin.delete(loginUser);
+        softly.assertThat(origin.isDeleted()).isEqualTo(true);
+    }
+
     @Test(expected = CannotDeleteException.class)
-    public void delete_타인답변존재() throws Exception {
+    public void delete_삭제불가_타인의질문() throws Exception {
         User loginUser = JAVAJIGI;
 
         Question origin = DEFAULT_QUESTION;
-        origin.writeBy(JAVAJIGI);
-        origin.addAnswer(new Answer(SANJIGI, "Test Answer"));
+        origin.writeBy(SANJIGI);
 
         origin.delete(loginUser);
     }
 
     @Test(expected = CannotDeleteException.class)
-    public void delete_not_owner() throws Exception {
+    public void delete_삭제불가_타인답변존재() throws Exception {
         User loginUser = JAVAJIGI;
 
         Question origin = DEFAULT_QUESTION;
-        origin.writeBy(SANJIGI);
+        origin.writeBy(JAVAJIGI);
+        origin.addAnswer(new Answer(SANJIGI, "Test Answer"));
 
         origin.delete(loginUser);
     }
