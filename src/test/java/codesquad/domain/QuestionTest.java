@@ -56,6 +56,17 @@ public class QuestionTest extends BaseTest {
     }
 
     @Test(expected = CannotDeleteException.class)
+    public void delete_타인답변존재() throws Exception {
+        User loginUser = JAVAJIGI;
+
+        Question origin = DEFAULT_QUESTION;
+        origin.writeBy(JAVAJIGI);
+        origin.addAnswer(new Answer(SANJIGI, "Test Answer"));
+
+        origin.delete(loginUser);
+    }
+
+    @Test(expected = CannotDeleteException.class)
     public void delete_not_owner() throws Exception {
         User loginUser = JAVAJIGI;
 
