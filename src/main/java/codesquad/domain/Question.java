@@ -46,6 +46,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
             throw new CannotDeleteException("작성자만 삭제 가능합니다.");
         }
 
+        if(!isDeletable()) {
+            throw new CannotDeleteException("삭제할 수 없는 답변이 포함돼있습니다.");
+        }
+
         this.deleted = true;
     }
 
@@ -60,6 +64,23 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     public boolean matchUserId(String userId) {
         return this.writer.matchUserId(userId);
+    }
+
+    public boolean isDeletable() {
+        if(answers.isEmpty()) {
+            return true;
+        }
+
+        return isAllOwnWritten();
+    }
+
+    private boolean isAllOwnWritten() {
+        for (Answer answer : answers) {
+            if(!answer.isOwner(writer)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public String getTitle() {
