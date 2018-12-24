@@ -1,5 +1,6 @@
 package codesquad.domain;
 
+import codesquad.exception.CannotDeleteException;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -65,6 +66,22 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void delete(User loginUser) throws CannotDeleteException {
+        if(!writer.equals(loginUser)) {
+            throw new CannotDeleteException("작성자만 삭제 가능합니다.");
+        }
+
+        this.deleted = true;
+    }
+
+    public DeleteHistory deleteHistory(User loginUser) throws CannotDeleteException {
+        if(!writer.equals(loginUser)) {
+            throw new CannotDeleteException("작성자만 삭제이력에 접근가능합니다.");
+        }
+
+        return new DeleteHistory(ContentType.ANSWER, getId(), writer);
     }
 
     @Override

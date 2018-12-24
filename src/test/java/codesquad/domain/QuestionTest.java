@@ -9,8 +9,9 @@ import static codesquad.domain.UserTest.JAVAJIGI;
 import static codesquad.domain.UserTest.SANJIGI;
 
 public class QuestionTest extends BaseTest {
-    public static final Question DEFAULT_QUESTION = new Question("test title", "test contents");
-    public static final Question UPDATED_QUESTION = new Question("updated title", "updated contents");
+    public static final Question DEFAULT_QUESTION = new Question(3L, JAVAJIGI, "test title", "test contents");
+    public static final Question UPDATED_QUESTION = new Question(4L, JAVAJIGI, "updated title", "updated contents");
+    public static final Question OTHERS_QUESTION = new Question(5L, SANJIGI, "others title", "others contents");
 
     public static Question newQuestion(String title, String contents) {
         return new Question(title, contents);

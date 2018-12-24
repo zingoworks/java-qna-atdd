@@ -43,6 +43,13 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = contents;
     }
 
+    public Question(long id, User writer, String title, String contents) {
+        super(id);
+        this.writeBy(writer);
+        this.title = title;
+        this.contents = contents;
+    }
+
     public void delete(User loginUser) throws CannotDeleteException {
         if (!matchUserId(loginUser.getUserId())) {
             throw new CannotDeleteException("작성자만 삭제 가능합니다.");
@@ -53,6 +60,20 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         }
 
         this.deleted = true;
+
+        for (Answer answer : answers) {
+            answer.delete(loginUser);
+        }
+    }
+
+    public void deleteAnswer(User loginUser, long id) throws CannotDeleteException {
+        Answer target;
+        for (Answer answer : answers) {
+            if(answer.getId() == id) {
+                target = answer;
+            }
+        }
+
     }
 
     public void update(User loginUser, Question updatedQuestion) {
@@ -111,9 +132,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.writer = loginUser;
     }
 
-    public void addAnswer(Answer answer) {
+    public Answer addAnswer(Answer answer) {
         answer.toQuestion(this);
         answers.add(answer);
+        return answer;
     }
 
     public boolean isOwner(User loginUser) {
@@ -122,6 +144,37 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public DeleteHistory deleteHistory(User loginUser) throws CannotDeleteException {
+        if(!writer.equals(loginUser)) {
+            throw new CannotDeleteException("작성자만 삭제이력에 접근가능합니다.");
+        }
+
+        return new DeleteHistory(ContentType.QUESTION, getId(), writer);
+    }
+
+    public List<DeleteHistory> getDeleteHistories(User loginUser) throws CannotDeleteException{
+        List<DeleteHistory> temp = new ArrayList<>();
+        temp.add(deleteHistory(loginUser));
+
+        if(!answers.isEmpty()) {
+            for (Answer answer : answers) {
+                temp.add(answer.deleteHistory(loginUser));
+            }
+        }
+
+        return temp;
+    }
+
+    public List<DeleteHistory> getAnswerDeleteHistories(User loginUser) throws CannotDeleteException{
+        List<DeleteHistory> temp = new ArrayList<>();
+        if(!answers.isEmpty()) {
+            for (Answer answer : answers) {
+                temp.add(answer.deleteHistory(loginUser));
+            }
+        }
+        return temp;
     }
 
     public boolean equalsTitleAndContents(Question target) {
@@ -135,6 +188,22 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     public List<Answer> getAnswers() {
         return answers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Question question = (Question) o;
+        return Objects.equals(title, question.title) &&
+                Objects.equals(contents, question.contents) &&
+                Objects.equals(writer, question.writer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), title, contents, writer);
     }
 
     @Override
