@@ -86,6 +86,7 @@ public class QuestionTest extends BaseTest {
         origin.addAnswer(new Answer(SANJIGI, "Test Answer"));
 
         origin.delete(loginUser);
+
     }
 
     //TODO : Mock을 이용해 QnaService에 대한 테스트

@@ -50,7 +50,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = contents;
     }
 
-    public void delete(User loginUser) throws CannotDeleteException {
+    public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
         if (!matchUserId(loginUser.getUserId())) {
             throw new CannotDeleteException("작성자만 삭제 가능합니다.");
         }
@@ -59,21 +59,23 @@ public class Question extends AbstractEntity implements UrlGeneratable {
             throw new CannotDeleteException("삭제할 수 없는 답변이 포함돼있습니다.");
         }
 
-        this.deleted = true;
+        List<DeleteHistory> temp = new ArrayList<>();
 
-        for (Answer answer : answers) {
-            answer.delete(loginUser);
-        }
+        this.deleted = true;
+        temp.add(new DeleteHistory(ContentType.QUESTION, getId(), writer));
+        temp.addAll(deleteAllAnswers(loginUser));
+
+        return temp;
     }
 
-    public void deleteAnswer(User loginUser, long id) throws CannotDeleteException {
-        Answer target;
-        for (Answer answer : answers) {
-            if(answer.getId() == id) {
-                target = answer;
+    private List<DeleteHistory> deleteAllAnswers(User loginUser) throws CannotDeleteException {
+        List<DeleteHistory> temp = new ArrayList<>();
+        if(!answers.isEmpty()) {
+            for (Answer answer : answers) {
+                temp.addAll(answer.delete(loginUser));
             }
         }
-
+        return temp;
     }
 
     public void update(User loginUser, Question updatedQuestion) {
@@ -106,6 +108,20 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return true;
     }
 
+    public Answer addAnswer(Answer answer) {
+        answer.toQuestion(this);
+        answers.add(answer);
+        return answer;
+    }
+
+    public boolean isOwner(User loginUser) {
+        return writer.equals(loginUser);
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -132,51 +148,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.writer = loginUser;
     }
 
-    public Answer addAnswer(Answer answer) {
-        answer.toQuestion(this);
-        answers.add(answer);
-        return answer;
-    }
-
-    public boolean isOwner(User loginUser) {
-        return writer.equals(loginUser);
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public DeleteHistory deleteHistory(User loginUser) throws CannotDeleteException {
-        if(!writer.equals(loginUser)) {
-            throw new CannotDeleteException("작성자만 삭제이력에 접근가능합니다.");
-        }
-
-        return new DeleteHistory(ContentType.QUESTION, getId(), writer);
-    }
-
-    public List<DeleteHistory> getDeleteHistories(User loginUser) throws CannotDeleteException{
-        List<DeleteHistory> temp = new ArrayList<>();
-        temp.add(deleteHistory(loginUser));
-
-        if(!answers.isEmpty()) {
-            for (Answer answer : answers) {
-                temp.add(answer.deleteHistory(loginUser));
-            }
-        }
-
-        return temp;
-    }
-
-    public List<DeleteHistory> getAnswerDeleteHistories(User loginUser) throws CannotDeleteException{
-        List<DeleteHistory> temp = new ArrayList<>();
-        if(!answers.isEmpty()) {
-            for (Answer answer : answers) {
-                temp.add(answer.deleteHistory(loginUser));
-            }
-        }
-        return temp;
-    }
-
     public boolean equalsTitleAndContents(Question target) {
         if (Objects.isNull(target)) {
             return false;
@@ -184,21 +155,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
         return title.equals(target.title) &&
                 contents.equals(target.contents);
-    }
-
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Question question = (Question) o;
-        return Objects.equals(title, question.title) &&
-                Objects.equals(contents, question.contents) &&
-                Objects.equals(writer, question.writer);
     }
 
     @Override

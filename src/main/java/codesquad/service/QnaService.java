@@ -56,9 +56,7 @@ public class QnaService {
     @Transactional
     public Question deleteQuestion(User loginUser, long id) throws CannotDeleteException {
         Question target = findById(id);
-        target.delete(loginUser);
-
-        deleteHistoryService.saveAll(target.getDeleteHistories(loginUser));
+        deleteHistoryService.saveAll(target.delete(loginUser));
         return target;
     }
 
@@ -71,17 +69,17 @@ public class QnaService {
     }
 
     @Transactional
-    public Answer addAnswer(User loginUser, long questionId, String contents) {
-        Question target = findById(questionId);
+    public Answer addAnswer(User loginUser, long id, String contents) {
+        Question target = findById(id);
         return target.addAnswer(new Answer(loginUser, contents));
     }
 
     @Transactional
-    public Question deleteAnswer(User loginUser, long questionId, long id) throws CannotDeleteException {
-        Question target = findById(questionId);
-        target.deleteAnswer(loginUser, id);
+    public Question deleteAnswer(User loginUser, long id, long answerId) throws CannotDeleteException {
+        Question question = findById(id);
+        Answer target = findByAnswerId(answerId);
 
-        deleteHistoryService.saveAll(target.getAnswerDeleteHistories(loginUser));
-        return target;
+        deleteHistoryService.saveAll(target.delete(loginUser));
+        return question;
     }
 }

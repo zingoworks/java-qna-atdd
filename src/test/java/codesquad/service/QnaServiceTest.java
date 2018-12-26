@@ -26,6 +26,9 @@ public class QnaServiceTest extends BaseTest {
     @Mock
     private QuestionRepository questionRepository;
 
+    @Mock
+    private DeleteHistoryService deleteHistoryService;
+
     @InjectMocks
     private QnaService qnaService;
 
